@@ -214,7 +214,7 @@ npm pack --dry-run --json
 
 测试覆盖 SQLite 事务与恢复、幂等建单、独立验收、公开默认策略和 Worker 并发槽。`devDependencies` 仅用于本地测试；运行时所需的 DSH 包由宿主提供。真实 DSH 安装后的并行验收步骤见 [SMOKE_TEST.md](docs/SMOKE_TEST.md)。
 
-上游内核的固定 commit、修改清单与重建方法见 [PROVENANCE.md](PROVENANCE.md)。
+上游内核的固定 commit、修改清单与重建方法见 [PROVENANCE.md](PROVENANCE.md)。若要将本系统写成研究论文，请先阅读 [RESEARCH_QUESTION_CARD.md](docs/RESEARCH_QUESTION_CARD.md)：其中明确区分现有实现证据、尚缺的真实 DSH 证据和可证伪假设。
 
 <a id="sec-10"></a>
 
