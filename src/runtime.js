@@ -9,6 +9,7 @@ import {
   HealthBoard,
   key,
   latestReport,
+  shellArgv,
   ticketOfSession,
   ticketStage,
   workerSessionId,
@@ -470,9 +471,7 @@ export class CompanyRuntime {
   }
 
   async runAcceptance(command, directory, timeoutMs) {
-    const argv = process.platform === 'win32'
-      ? ['pwsh', '-NoProfile', '-Command', command]
-      : ['sh', '-c', command]
+    const argv = await shellArgv(this.ctx.subprocess, command)
     const signal = AbortSignal.any([this.lifetime, AbortSignal.timeout(timeoutMs)])
     try {
       const handle = this.ctx.subprocess.spawn({

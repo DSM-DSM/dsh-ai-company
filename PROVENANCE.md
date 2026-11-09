@@ -13,8 +13,8 @@
 | 文件 | 修改 |
 |:---:|:---:|
 | `src/company-kernel.ts` | 新增；只导出 AI-Company 需要的核心、Effects、Executor、Delivery 和模型初始化能力 |
-| `src/company-environment.ts` | 新增；最小的 subprocess、目录校验和执行根辅助，不配置 GitHub/飞书账号 |
-| `src/executor/dsh.ts` | 改用中性执行环境、跨平台目录名和公司报告消息；不加载上游 Setup/Runtime |
+| `src/company-environment.ts` | 新增；最小的 subprocess、目录校验和执行根辅助，不配置 GitHub/飞书账号；Windows 验收与准备命令支持 `pwsh` 不存在时回退 `powershell.exe` |
+| `src/executor/dsh.ts` | 改用中性执行环境、跨平台目录名和公司报告消息；不加载上游 Setup/Runtime；目录准备使用上述 Shell 回退 |
 | `src/core/assignments.ts` | 恢复提示改为检查当前工作目录、持久历史与既有输出 |
 | `tsdown.config.ts` | 增加 `company-kernel` 构建入口 |
 | `.gitignore` | 公开副本保留 `lib/` 预构建产物，避免安装包只有源码而缺运行文件 |

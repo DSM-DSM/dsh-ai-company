@@ -8,7 +8,7 @@ import { key, latestAssignment, latestReport, liveTicket, runningAssignment, thr
 import type { AssessmentOutcome, Assignment, EngineForExecutor, Execution, Executor, Mandate, PolicyEffect, Ticket, TicketInput, Trigger }
   from '../core/index.ts'
 import type { Machine } from '../deployment.ts'
-import { executionRoot, runAsWorker, verifyDirectory, type Variable } from '../company-environment.ts'
+import { executionRoot, runAsWorker, shellArgv, verifyDirectory, type Variable } from '../company-environment.ts'
 import type { Settings } from '../policy.ts'
 import type { Store } from '../app/store.ts'
 import { Later, type Effects } from '../app/effects.ts'
@@ -257,7 +257,7 @@ export class DshExecutor implements Executor {
     // Enforce a timeout so a hung prepare command (such as on a credential prompt) fails the ticket instead of holding a worker slot indefinitely.
     const signal = AbortSignal.any([this.host.lifetime, AbortSignal.timeout(PREPARE_TIMEOUT_MS)])
     if (command) {
-      const argv = process.platform === 'win32' ? ['pwsh', '-NoProfile', '-Command', command] : ['sh', '-c', command]
+      const argv = await shellArgv(this.host.context.subprocess, command)
       await runAsWorker(this.host.context.subprocess, argv, dirname(directory), signal, env)
         .catch(async (error: unknown) => {
           // Remove an empty directory left by a failed prepare command so a later retry does not treat it as already prepared.

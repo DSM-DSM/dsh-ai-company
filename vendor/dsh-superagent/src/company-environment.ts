@@ -5,6 +5,14 @@ export interface Variable { key: string; value: string; description: string | { 
 export const executionRoot = (settings: { executor: { directory: string } }, stateDir: string): string =>
   settings.executor.directory || `${stateDir}/work`
 
+/** Windows 同时兼容 PowerShell 7 的 pwsh 与系统自带 Windows PowerShell。 */
+export async function shellArgv(subprocess: SubprocessRuntime, command: string): Promise<string[]> {
+  if (process.platform !== 'win32') return ['sh', '-c', command]
+  const resolve = subprocess.resolveExecutable?.bind(subprocess) ?? (async () => 'powershell.exe')
+  const executable = await resolve('pwsh').catch(() => 'powershell.exe')
+  return [executable, '-NoProfile', '-Command', command]
+}
+
 class CommandError extends Error {
   constructor(message: string, readonly exitCode?: number) { super(message) }
 }

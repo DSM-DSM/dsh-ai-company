@@ -1,7 +1,7 @@
 import { Volatile } from "@deepseek-ai/cordis";
 import { z } from "zod";
 import s from "@deepseek-ai/schemastery";
-import "@deepseek-ai/dsh-subprocess";
+import { SubprocessRuntime } from "@deepseek-ai/dsh-subprocess";
 //#region src/core/reasons.d.ts
 /**
  * Structured reason codes and templates for decisions, filtered triggers, and ended assignments.

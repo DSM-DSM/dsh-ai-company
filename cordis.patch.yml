@@ -1,6 +1,6 @@
 - insert:
     - id: ai-company-runtime
-      name: './entry.js'
+      name: './src/activate.js'
     - id: ai-company-repo-manage
       name: './src/repo-manage-entry.js'
     - id: preset-ai-company-worker

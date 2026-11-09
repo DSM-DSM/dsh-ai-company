@@ -1945,6 +1945,20 @@ var HealthBoard = class {
 //#endregion
 //#region src/company-environment.ts
 const executionRoot = (settings, stateDir) => settings.executor.directory || `${stateDir}/work`;
+/** Windows 同时兼容 PowerShell 7 的 pwsh 与系统自带 Windows PowerShell。 */
+async function shellArgv(subprocess, command) {
+	if (process.platform !== "win32") return [
+		"sh",
+		"-c",
+		command
+	];
+	return [
+		await (subprocess.resolveExecutable?.bind(subprocess) ?? (async () => "powershell.exe"))("pwsh").catch(() => "powershell.exe"),
+		"-NoProfile",
+		"-Command",
+		command
+	];
+}
 var CommandError = class extends Error {
 	exitCode;
 	constructor(message, exitCode) {
@@ -2582,16 +2596,7 @@ var DshExecutor = class {
 		const env = Object.fromEntries(this.host.environment(ticket).map((variable) => [variable.key, variable.value]));
 		const signal = AbortSignal.any([this.host.lifetime, AbortSignal.timeout(PREPARE_TIMEOUT_MS)]);
 		if (command) {
-			const argv = process.platform === "win32" ? [
-				"pwsh",
-				"-NoProfile",
-				"-Command",
-				command
-			] : [
-				"sh",
-				"-c",
-				command
-			];
+			const argv = await shellArgv(this.host.context.subprocess, command);
 			await runAsWorker(this.host.context.subprocess, argv, dirname(directory), signal, env).catch(async (error) => {
 				await rmdir(directory).catch(() => {});
 				throw new PrepareFailed(`The prepare command failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -3264,4 +3269,4 @@ var AgentDelivery = class {
 	}
 };
 //#endregion
-export { said as C, UserError as D, USER_ERRORS as E, reasonText as S, ticketStage as T, Later as _, DshExecutor as a, Engine as b, batchOf as c, mandateInstructions as d, sourceTrigger as f, Effects as g, workerSessionId as h, resolveRoleModel as i, inputMessage as l, triggerMessage as m, messageId as n, WorkerSlots as o, ticketOfSession as p, initializeRoleModel as r, batchLine as s, AgentDelivery as t, inputResource as u, HealthBoard as v, canRetry as w, REASONS as x, MemoryRepositories as y };
+export { reasonText as C, USER_ERRORS as D, ticketStage as E, UserError as O, REASONS as S, canRetry as T, Later as _, DshExecutor as a, MemoryRepositories as b, batchOf as c, mandateInstructions as d, sourceTrigger as f, Effects as g, workerSessionId as h, resolveRoleModel as i, inputMessage as l, triggerMessage as m, messageId as n, WorkerSlots as o, ticketOfSession as p, initializeRoleModel as r, batchLine as s, AgentDelivery as t, inputResource as u, shellArgv as v, said as w, Engine as x, HealthBoard as y };
