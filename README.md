@@ -1,6 +1,6 @@
 # AI-Company for DeepSeek Harness
 
-[中文完整文档](README.zh-CN.md) | English
+[中文完整文档](README.zh-CN.md) | English | [GitHub](https://github.com/DSM-DSM/dsh-ai-company) | [Gitee](https://gitee.com/AiALi7-9-22/dsh-ai-company)
 
 AI-Company turns DSH workspaces into a federation of agent companies and adds persistent, parallel, verifiable execution inspired by DeepSeek's Super-agent.
 
@@ -25,7 +25,10 @@ AI-Company turns DSH workspaces into a federation of agent companies and adds pe
 ## Install
 
 ```sh
-git clone <your-git-url>/dsh-ai-company.git /absolute/path/dsh-ai-company
+# Gitee
+git clone https://gitee.com/AiALi7-9-22/dsh-ai-company.git /absolute/path/dsh-ai-company
+# Or GitHub
+git clone https://github.com/DSM-DSM/dsh-ai-company.git /absolute/path/dsh-ai-company
 dsh plugin --profile web add /absolute/path/dsh-ai-company
 ```
 

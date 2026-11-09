@@ -4,7 +4,7 @@
 ![Node](https://img.shields.io/badge/Node-%5E22.19%20%7C%20%3E%3D24-blue?style=for-the-badge)
 ![DSH](https://img.shields.io/badge/DSH-%5E0.2.1--alpha.2-purple?style=for-the-badge)
 
-[English](README.md) | 中文
+[English](README.md) | 中文 | [GitHub](https://github.com/DSM-DSM/dsh-ai-company) | [Gitee](https://gitee.com/AiALi7-9-22/dsh-ai-company)
 
 > **多公司管理 + 持久化工单 + 并行 Worker + 独立验收。** AI-Company 把 DSH 工作区视为公司，将 Super-agent 的 Trigger、Mandate、Ticket、Assignment、Report 和恢复机制接入跨公司组织编排。`accepted` 只代表工单已持久化并排入队列，绝不等于任务完成。
 
@@ -83,15 +83,24 @@ Bundle 已包含 Worker 与组织预设，**不需要单独安装 lean-worker**�
 
 ### 从源码安装
 
+Gitee（中国大陆网络优先）：
+
 ```powershell
-git clone <your-git-url>/dsh-ai-company.git D:\source\dsh-ai-company
+git clone https://gitee.com/AiALi7-9-22/dsh-ai-company.git D:\source\dsh-ai-company
 dsh plugin --profile web add D:\source\dsh-ai-company
 ```
 
-Linux/macOS 示例：
+GitHub：
+
+```powershell
+git clone https://github.com/DSM-DSM/dsh-ai-company.git D:\source\dsh-ai-company
+dsh plugin --profile web add D:\source\dsh-ai-company
+```
+
+Linux/macOS 示例（Gitee；GitHub 只需替换 URL）：
 
 ```bash
-git clone <your-git-url>/dsh-ai-company.git "$HOME/src/dsh-ai-company"
+git clone https://gitee.com/AiALi7-9-22/dsh-ai-company.git "$HOME/src/dsh-ai-company"
 dsh plugin --profile web add "$HOME/src/dsh-ai-company"
 ```
 
