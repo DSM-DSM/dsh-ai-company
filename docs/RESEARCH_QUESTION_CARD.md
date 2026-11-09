@@ -25,18 +25,18 @@
 - 公开 Bundle、上游固定 commit 与本地适配已实现。
 - Node 单元与模拟集成测试覆盖原子建单、幂等、完整信封区分、独立 Thread、报告事务、独立验收、空证据拒绝、Ticket 树深度、资产门禁和重开恢复。
 - 上游 TypeScript 类型检查与构建通过；npm 打包包含实际 company-kernel 与运行 chunk。
+- 真实 DSH 中两个不同并行 Worker 均完成 ready 回达，并分别通过独立验收；完整原始记录见 [VERIFICATION.md](VERIFICATION.md)。
+- DSH 重启后，已完成工单保持 completed + verified，重复幂等派发只返回原 Ticket，未出现自动重跑。
 
 ## 尚缺证据
 
-- 当前 DSH 中两个真实并行 Worker 的 ready 回达与独立验收。
-- 重启后不重复创建/投递的实证。
 - Windows `directory + prepareCommand` 的真实执行。
 - 多模型、多任务类型、多并发度的对照实验及原始运行日志。
 - 与单 Session、普通 subagent、官方 Super-agent 或简单任务队列的可比测量。
 
 ## 最小下一步
 
-先在空白 DSH 工作区完成两个不同工单的真实并行闭环，再执行幂等、失败恢复和重启实验。保留每个任务的原始 Ticket、Assignment、Session、验收退出码、证据文件、时间戳和资源消耗；在这些证据存在前，不在论文中声称生产可靠性或性能优势。
+下一阶段执行多模型、多任务类型、多并发度的对照实验，保留每个任务的原始 Ticket、Assignment、Session、验收退出码、证据文件、时间戳和资源消耗；在这些更大规模证据存在前，不在论文中声称生产可靠性或性能优势。Windows `directory + prepareCommand` 另作独立兼容性验证，不与主闭环结果混合。
 
 ## 文章定位
 

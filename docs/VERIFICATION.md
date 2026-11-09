@@ -41,7 +41,7 @@
 
 ## 5. 重启验证
 
-待 DSH 重启后复核：已完成工单不得自动重跑，重复幂等派发仍返回原 Ticket。
+DSH 重启后再次读取两张工单，二者均保持 `completed + verified`，Ticket、Worker Session、创建时间和验收时间均未变化，未出现新的 Assignment 或自动重跑。再次使用相同幂等键派发工单 A，仍返回 `duplicate=true` 和原 Ticket；2026-11-09T13:41:17.744Z 的策略检查时间与原始 `acceptedAt=2026-11-09T13:15:48.652Z` 分别记录，证明新调用没有创建新 Worker。
 
 ## 6. 证据边界
 
