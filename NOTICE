@@ -1,0 +1,24 @@
+AI-Company
+Copyright (c) 2026 AI-Company contributors
+
+本仓库包含以下第三方源码与衍生修改：
+
+1. DeepSeek Harness Team — dsh-superagent-prototype
+   来源：https://github.com/deepseek-ai/dsh-superagent-prototype
+   固定 commit：8c32a9dc5d72c033816c6a8110b37f40cf94fba4
+   许可证：MIT，Copyright (c) 2026 DeepSeek Harness Team。
+   上游完整许可证保留于 vendor/dsh-superagent/LICENSE。
+   上游声明其为研究原型、非正式产品且非生产就绪；本仓库的适配不表示上游背书。
+
+   本地适配包括：
+   - 新增独立的 company-kernel 导出，不启动上游 GitHub/飞书 Runtime。
+   - 将 Executor 的工作区/报告/目录辅助逻辑与平台部署解耦。
+   - 将重启恢复提示改为中性的工作区与既有副作用检查。
+   - 新增 AI-Company 原生 Store、Runtime、Sessions、Policy、Outbox 与验收层。
+
+2. E3 / taskgauge 的复杂度估算思想
+   src/complexity.js 是 AI-Company 自有的确定性启发式实现，参考任务范围估算、
+   文本复杂度和影子运行理念；未复制 taskgauge 源文件。E3 论文：
+   https://arxiv.org/abs/2607.13034
+
+所有附加适配代码、组织预设与图标均按本仓库 MIT LICENSE 发布。

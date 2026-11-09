@@ -1,0 +1,5 @@
+node_modules/
+# AI-Company 公开分发需要携带 lib/ 中的预构建 company-kernel，普通用户无需 TypeScript 工具链。
+.artifacts/
+.env
+coverage/

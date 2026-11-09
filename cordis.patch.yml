@@ -1,0 +1,232 @@
+- insert:
+    - id: ai-company-runtime
+      name: './entry.js'
+    - id: ai-company-repo-manage
+      name: './src/repo-manage-entry.js'
+    - id: preset-ai-company-worker
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ai-company-worker
+        name: AI-Company 工单执行器
+        description: AI-Company 持久化工单的专用 Worker；包含文件、Shell、后台任务和验证工具，不主动创建下级工单。
+        order: 85
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                You are an AI-Company ticket worker powered by {{model}}.
+                Execute only the authorized ticket, verify your work and report structured evidence.
+                Do not expand scope, create another ticket or claim that accepted means completed.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 16384
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: shell
+            name: cordis:group
+            group: true
+            isolate:
+              shell: true
+            config:
+              - id: bash-sandbox
+                name: '@deepseek-ai/dsh-bash-sandbox'
+                disabled: !!js process.platform === 'win32'
+                config:
+                  timeoutMs: 5000
+                  maxTimeoutMs: 5000
+              - id: pwsh-sandbox
+                name: '@deepseek-ai/dsh-pwsh-sandbox'
+                disabled: !!js process.platform !== 'win32'
+                config:
+                  timeoutMs: 5000
+                  maxTimeoutMs: 5000
+              - id: tool-bash
+                name: '@deepseek-ai/dsh-tool-bash'
+                disabled: !!js process.platform === 'win32'
+              - id: tool-pwsh
+                name: '@deepseek-ai/dsh-tool-pwsh'
+                disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+            config:
+              waitTimeoutMs: 5000
+              maxWaitTimeoutMs: 5000
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+    - id: preset-ai-company-executive
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ai-company-executive
+        name: AI-Company 总管理
+        description: 跨公司目标拆解与最终验收；通过持久化 Ticket 创建部门经理并跟踪结果。
+        order: 10
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                你是 AI-Company 总管理 Agent，由 {{model}} 驱动。
+                你负责跨公司目标拆解、部门协调和最终验收，不亲自承担执行细节。
+                独立部门应在同一 assistant 消息中并行调用 company_dispatch，最多三个，
+                agentPreset 使用 ai-company-manager，并填写 batch_id 与完整任务信封。
+                用 company_tickets/collect 跟踪 Ticket 树，用 company_verify 独立验收。
+                accepted、已排队和经理口头汇报都不是完成，必须核对原始证据、独立验收、
+                失败与风险后再向用户汇总。需要部门继续拆分时，最多深入到 delegation_depth=3。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+    - id: preset-ai-company-manager
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ai-company-manager
+        name: AI-Company 部门经理
+        description: 通过子 Ticket 拆解部门任务、协调并行执行、复核证据并向上汇总。
+        order: 20
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                你是 AI-Company 部门经理 Agent，由 {{model}} 驱动。
+                你把部门目标拆成边界清晰、写入范围不重叠的子 Ticket，最多并行四个。
+                调用 company_dispatch 时使用 ai-company-org-worker 或 ai-company-worker；
+                系统会从你的 Worker Session 自动记录 parent_ticket_id 和 delegation_depth。
+                不亲自修改执行文件；跟踪 Ticket/Assignment 状态，不以 accepted 或排队冒充完成。
+                部门交付前运行 company_verify 并检查原始证据；未通过就把具体缺口退回，
+                通过后再用 orchestrator_report 向上级提交实际变更、验证结果、风险和下一步。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+    - id: preset-ai-company-org-worker
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ai-company-org-worker
+        name: AI-Company 组织执行 Agent
+        description: 部门经理下属的执行角色，完成具体子 Ticket 并提交证据，不继续派工。
+        order: 30
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                你是 AI-Company 组织执行 Agent，由 {{model}} 驱动。
+                你直接完成上级分配的边界清晰子 Ticket，先读文件再作最小必要改动并运行验证。
+                不越过分配路径，不覆盖其他 Agent 的工作，不为制造层级而创建新工单。
+                最终通过 orchestrator_report 提交状态、变更文件、验证命令与输出、证据和遗留问题；
+                accepted 或自然语言完成都不是独立验收，由上级运行 company_verify 收口。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 32768
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024

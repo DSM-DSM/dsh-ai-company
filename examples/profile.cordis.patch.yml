@@ -1,0 +1,26 @@
+# 可选：把本文件内容复制到使用者自己的 profile patch，并按需修改。
+- id: ai-company-runtime
+  name: 'dsh-ai-company'
+  config:
+    # stateDir 不设置时位于 ${DSH_HOME}/ai-company；不要放进公开仓库。
+    maxWorkers: 3
+    executionMode: workspace # workspace=在原项目目录工作；directory=每工单一个独立空目录
+    workerPreset: ai-company-worker
+    # workerModel: { provider: your-provider, model: your-model }
+    modelPolicy:
+      maxContextPressure: 0.9
+      candidates: []
+    shadow:
+      enabled: false
+      # enabled: true 后才会记录 goal/scope/acceptance/evidence 等台账信息。
+      # ledgerPath: '/absolute/private/path/dispatch-ledger.jsonl'
+    policy:
+      enforcement: shadow # shadow 只记录；enforce 会拒绝 wouldBlock 的任务
+      profiles:
+        default: core-values-v1
+        # '/absolute/project/path':
+        #   id: my-project-v1
+        #   timeZone: Asia/Shanghai
+        #   quietWindows:
+        #     - { start: '00:00', end: '09:00', reason: '禁止大文件传输' }
+        #   roles: {}

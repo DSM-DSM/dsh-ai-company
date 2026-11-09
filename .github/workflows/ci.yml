@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['22.19.0', '24.21.0']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install test-only dependencies
+        run: pnpm install --ignore-scripts
+      - name: Unit and integration-model tests
+        run: pnpm test
+      - name: Static and publication audit
+        run: |
+          node scripts/check.mjs
+          node scripts/pack-audit.mjs
