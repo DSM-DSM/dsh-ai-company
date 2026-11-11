@@ -1,10 +1,29 @@
 {
   "name": "dsh-ai-company",
   "version": "2.0.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "description": "Multi-workspace agent federation with persistent tickets, parallel workers, verified completion and recovery for DeepSeek Harness.",
   "license": "MIT",
+  "author": "Yu Jinyue",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DSM-DSM/dsh-ai-company.git"
+  },
+  "homepage": "https://github.com/DSM-DSM/dsh-ai-company#readme",
+  "bugs": {
+    "url": "https://github.com/DSM-DSM/dsh-ai-company/issues"
+  },
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "multi-agent",
+    "workflow",
+    "agent-organization",
+    "verified-completion"
+  ],
   "packageManager": "pnpm@12.14.0",
   "engines": {
     "node": "^22.19.0 || >=24.0.0",
@@ -30,6 +49,8 @@
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
+    "assets/icon-180.png",
+    "screenshots.json",
     "README.md",
     "README.zh-CN.md",
     "LICENSE",
